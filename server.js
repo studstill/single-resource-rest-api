@@ -1,14 +1,18 @@
 var express = require('express');
-var mongoose = require('mongoose');
-var port = process.env.PORT || 3000;
-var app = express();
 
-function startServer(app, port) {
+module.exports = function startServer() {
+  var app = express(),
+    userRouter = require('./user-router'),
+    port = process.env.PORT || 3000;
+
   app.listen(port);
+  app.use('/', userRouter);
   console.log('Server started on ' + port);
-  app.get('/', function(req, res) {
-    res.json({msg: 'GET request received at "/"'});
-  });
-}
+};
 
-startServer(app, port);
+/**************************************************
+/  Server is being started within 'server-test.js'
+/  during testing phase (i.e. NOW)
+/**************************************************/
+
+

@@ -1,0 +1,35 @@
+{
+  "name": "single-resource-rest-api",
+  "version": "0.1.0",
+  "description": "REST API with a single resource",
+  "main": "server.js",
+  "scripts": {
+    "test": "gulp",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studstill/single-resource-rest-api.git"
+  },
+  "keywords": [
+    "simple",
+    "server"
+  ],
+  "author": "Jason Studstill",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/studstill/single-resource-rest-api/issues"
+  },
+  "homepage": "https://github.com/studstill/single-resource-rest-api#readme",
+  "dependencies": {
+    "express": "^4.13.1",
+    "mongoose": "^4.0.7"
+  },
+  "devDependencies": {
+    "chai": "^3.1.0",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-mocha": "^2.1.3",
+    "jshint-stylish": "^2.0.1"
+  }
+}

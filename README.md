@@ -1,6 +1,6 @@
-#How to Use:
+This repo creates a single resource rest API with Express that's backed by Mongo.
 
-##This repo creates a single resource rest API with Express that's backed by Mongo.
+#How to test:
 
 - Clone this repo into a local directory on your computer
 
@@ -8,7 +8,7 @@
 
 - Run ```npm install```
 
-- To test run ```gulp```
+- Run ```gulp```
 
 
 

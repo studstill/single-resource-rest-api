@@ -62,7 +62,7 @@ module.exports = function(router) {
   router.put('/:id', function(req, res) {
     var user = req.params.id;
 
-    User.update({username: user}, {$set: req.body}, {upsert: true},
+    User.update({username: user}, {$set: req.body}, {upsert: false},
       function(err, updateMessageObj) {
       if (!err) {
         updateMessageObj.msg = 'Successfully created or updated username "' +

@@ -24,7 +24,6 @@ module.exports = function(router) {
   // Handle ANY OTHER GET Request
   router.get('/:id', function(req, res) {
     var user = req.params.id;
-    console.log('Get User: ', user);
     // Return document that matches username
     User.find({username: user}, function(err, data) {
       if (!err && data[0]) {
@@ -40,19 +39,20 @@ module.exports = function(router) {
   /************************************************************/
 
   router.post('/', function(req, res) {
-    var newUser = new User(req.body);
-    // Unsure that data exists
+    // Unsure that data exists && there is a username property
     // source: http://stackoverflow.com/questions/4994201/is-object-empty#answer-4994244
-    if (Object.getOwnPropertyNames(req.body).length > 0) {
-      newUser.save(function(err, newUser) {
-        if (err) return console.err(err);
-        res.json(newUser);
-      });
-    } else {
-      res.json({error: 'Input does not match schema',
-        userSchema: {'username': 'String', 'email': 'String', 'age': 'Number'}
-      });
-    }
+    if (Object.getOwnPropertyNames(req.body).length > 0 &&
+        req.body.username) {
+      var newUser = new User(req.body);
+        newUser.save(function(err, newUser) {
+          if (err) return console.err(err);
+          res.json(newUser);
+        });
+      } else {
+        res.json({error: 'Input does not match schema',
+          userSchema: {'username': 'String', 'email': 'String', 'age': 'Number'}
+        });
+      }
   });
 
   /************************************************************
@@ -65,8 +65,9 @@ module.exports = function(router) {
     User.update({username: user}, {$set: req.body}, {upsert: true},
       function(err, updateMessageObj) {
       if (!err) {
-        res.json({msg: 'Successfully created or updated username "' + user +
-          '"" with ' + JSON.stringify(req.body)});
+        updateMessageObj.msg = 'Successfully created or updated username "' +
+        user + '"" with ' + JSON.stringify(req.body);
+        res.json(updateMessageObj);
       } else {
         res.status(404).json({error: 'Input does not match schema',
           userSchema: {'username': 'String', 'email': 'String', 'age': 'Number'}

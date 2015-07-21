@@ -24,8 +24,9 @@ module.exports = function startServer() {
       res.status(404).json(catchAllMessage);
     });
 
-    app.listen(port);
-    console.log('Server started on ' + port);
+    app.listen(port, function() {
+      console.log('Server started on ' + port);
+    });
 };
 
 /**************************************************

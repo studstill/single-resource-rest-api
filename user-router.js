@@ -45,7 +45,7 @@ module.exports = function(router) {
         req.body.username) {
       var newUser = new User(req.body);
         newUser.save(function(err, newUser) {
-          if (err) return console.err(err);
+          if (err) return console.error(err.errors);
           res.json(newUser);
         });
       } else {
@@ -62,14 +62,14 @@ module.exports = function(router) {
   router.put('/:id', function(req, res) {
     var user = req.params.id;
 
-    User.update({username: user}, {$set: req.body}, {upsert: false},
+    User.update({username: user}, {$set: req.body}, {runValidators: true},
       function(err, updateMessageObj) {
       if (!err) {
         updateMessageObj.msg = 'Successfully created or updated username "' +
         user + '"" with ' + JSON.stringify(req.body);
         res.json(updateMessageObj);
       } else {
-        res.status(404).json({error: 'Input does not match schema',
+        res.status(404).json({err: err.toString(), error: 'Input does not match schema',
           userSchema: {'username': 'String', 'email': 'String', 'age': 'Number'}
         });
       }

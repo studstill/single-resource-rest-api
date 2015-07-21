@@ -15,7 +15,7 @@ var correctSchemaObj = {'username': 'jason123',
                         'email': 'jason123@email.com',
                         'age': 31};
 
-var incorrectSchemaObj = {'email': 'crazy_person123@aol.com',
+var incorrectSchemaObj = {'email': 'crazy_person123ATaol.com',
                           'favoriteActor': 'Tom Cruise'};
 
 var propToUpdate = {age: 5000};
@@ -74,7 +74,7 @@ describe('server', function() {
       .post('/users')
       .send(incorrectSchemaObj)
       .then(function(res) {
-        expect(res.body.error).to.not.eql(null);
+        expect(res.body.err).to.not.eql(null);
         done();
       });
   });
@@ -92,6 +92,13 @@ describe('server', function() {
         expect(err).to.eql(null);
         expect(res.body).to.not.eql(undefined);
         expect(res.body.ok).to.eql(1);
+      });
+    // Input improperly formated email and expect err
+    chai.request('http://localhost:3000')
+      .put('/users/jason123')
+      .send({email: 'jason123ATemail.corn'})
+      .end(function(err, res) {
+        expect(res.body.err).to.not.eql(null);
         done();
       });
   });

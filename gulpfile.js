@@ -39,11 +39,11 @@ gulp.task('webpack', function() {
 });
 
 gulp.task('copy', function() {
-  return gulp.src('app/**/*.html')
+  return gulp.src(['app/**/*.html', 'app/**/*.css'])
     .pipe(gulp.dest('build/'));
 });
 
 gulp.task('build', ['webpack', 'copy']);
 
-gulp.watch(['app/js/*.js', 'app/*.html'], ['copy', 'webpack'])
+gulp.watch(['app/js/*.js', 'app/*.html', 'app/*.css'], ['copy', 'webpack'])
 

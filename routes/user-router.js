@@ -1,7 +1,7 @@
 'use strict';
 
 var bodyParser = require('body-parser');
-var User = require('./user-model');
+var User = require('../models/user-model');
 
 module.exports = function(router) {
   router.use(bodyParser.json());

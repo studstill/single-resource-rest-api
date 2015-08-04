@@ -4,27 +4,21 @@ var mongoose = require('mongoose');
 var chai = require('chai');
 var chaiHTTP = require('chai-http');
 var expect = require('chai').expect;
-var startServer = require('../server.js');
-var User = require('../user-model');
+var server = require('../server.js');
+var User = require('../models/user-model');
 
 chai.use(chaiHTTP);
 
-
 // Create variables for testing
 var correctSchemaObj = {'username': 'jason123',
-                        'email': 'jason123@email.com',
-                        'age': 31};
+                        'note': 'My first note!'};
 
 var incorrectSchemaObj = {'email': 'crazy_person123ATaol.com',
                           'favoriteActor': 'Tom Cruise'};
 
-var propToUpdate = {age: 5000};
+var propToUpdate = {note: 'New note here!'};
 
 describe('server', function() {
-
-  before(function() {
-    startServer();
-  });
 
   after(function(done) {
     mongoose.connection.db.dropDatabase();
@@ -67,8 +61,7 @@ describe('server', function() {
       .send(correctSchemaObj)
       .then(function(res) {
         expect(res.body.username).to.eql(correctSchemaObj.username);
-        expect(res.body.email).to.eql(correctSchemaObj.email);
-        expect(res.body.age).to.eql(correctSchemaObj.age);
+        expect(res.body.note).to.eql(correctSchemaObj.note);
       });
     chai.request('http://localhost:3000')
       .post('/users')
@@ -96,7 +89,7 @@ describe('server', function() {
     // Input improperly formated email and expect err
     chai.request('http://localhost:3000')
       .put('/users/jason123')
-      .send({email: 'jason123ATemail.corn'})
+      .send({note: 'I made a note!'})
       .end(function(err, res) {
         expect(res.body.err).to.not.eql(null);
         done();

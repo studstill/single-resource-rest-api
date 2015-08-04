@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<!-- We're setting up a 2-way data binding -->
+<body data-ng-app="notesApp">
+<!--   The "main" tag is html5, it defines the main content of the page, and there can only be one "main" tag -->
+  <main data-ng-controller="notesController">
+    <h1>{{ appName }}</h1>
+    <h3>{{ appDescription }}</h3>
+  <!--     The input text from below will be saved in a variable called "greeting" -->
+    Username is: {{ username }}
+    <input type="text" data-ng-model="username" />
+    <textarea type="text" data-ng-model="appDescription" rows="4" cols="50"></textarea>
+    <button data-ng-click="saveNote()">Keep Note!</button>
+  </main>
+
+  <script src="bundle.js"></script>
+</body>
+</html>

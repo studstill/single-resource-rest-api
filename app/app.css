@@ -1,0 +1,28 @@
+body {
+  background-image: url('surfer-penguin.jpg');
+  background-position: top;
+  background-size: cover;
+}
+
+h1,h2,h3 {
+  font-family: helvetica;
+  color: green;
+}
+
+main {
+  position: relative;
+  border: solid;
+  padding: 1em;
+  margin: 1em 30%;
+  background-color: white;
+}
+
+input {
+  display: block;
+  margin: 5px;
+}
+
+textarea {
+  display: block;
+  margin: 5px;
+}

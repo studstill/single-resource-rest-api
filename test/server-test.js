@@ -4,11 +4,10 @@ var mongoose = require('mongoose');
 var chai = require('chai');
 var chaiHTTP = require('chai-http');
 var expect = require('chai').expect;
-var startServer = require('../server.js');
+var server = require('../server.js');
 var User = require('../user-model');
 
 chai.use(chaiHTTP);
-
 
 // Create variables for testing
 var correctSchemaObj = {'username': 'jason123',
@@ -21,10 +20,6 @@ var incorrectSchemaObj = {'email': 'crazy_person123ATaol.com',
 var propToUpdate = {age: 5000};
 
 describe('server', function() {
-
-  before(function() {
-    startServer();
-  });
 
   after(function(done) {
     mongoose.connection.db.dropDatabase();

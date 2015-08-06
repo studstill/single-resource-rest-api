@@ -1,9 +1,3 @@
-body {
-  background-image: url('surfer-penguin.jpg');
-  background-position: top;
-  background-size: cover;
-}
-
 h1,h2,h3 {
   font-family: helvetica;
   color: green;
@@ -11,9 +5,23 @@ h1,h2,h3 {
 
 main {
   position: relative;
-  border: solid;
   padding: 1em;
-  margin: 1em 30%;
+  margin: 0 auto;
+}
+
+#usersList {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.user {
+  display: block;
+  list-style: none;
+  position: relative;
+  border: solid;
+  height: auto;
+  padding: 1em;
+  margin: .5em auto 0;
   background-color: white;
 }
 
@@ -22,7 +30,3 @@ input {
   margin: 5px;
 }
 
-textarea {
-  display: block;
-  margin: 5px;
-}

@@ -1,4 +1,8 @@
-#How to test:
+##How to test:
+
+- Run `mocha`
+
+#How to use:
 
 - Clone this repo into a local directory on your computer
 
@@ -10,10 +14,4 @@
 
 - Run `gulp`
 
-- Navigate your browser to `localhost://3000'
-
-
-
-
-
-
+- Navigate your browser to `localhost://3000`

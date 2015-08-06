@@ -4,22 +4,17 @@ var jshint = require('gulp-jshint');
 var exec = require('child_process').exec;
 var webpack = require('gulp-webpack');
 
-gulp.task('default', ['build'], function() {});
+gulp.task('default', ['build','startServer'], function() {});
 
 // Actually start server by entering "mongod" in the command line
-// gulp.task('mongod', function() {
-//   exec('mongod', function(err, stdout, stderr) {
-//     console.log('stdout: ' + stdout);
-//     console.log('stderr: ' + stderr);
-//     if (err !== null) {
-//       console.log('exec error: ' + err);
-//     }
-//   });
-// });
-
-gulp.task('test', function() {
-  return gulp.src('test/*test.js')
-            .pipe(mocha());
+gulp.task('startServer', function() {
+  exec('node server.js', function(err, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+    if (err !== null) {
+      console.log('exec error: ' + err);
+    }
+  });
 });
 
 gulp.task('lint', function() {
@@ -45,5 +40,5 @@ gulp.task('copy', function() {
 
 gulp.task('build', ['webpack', 'copy']);
 
-gulp.watch(['app/js/*.js', 'app/*.html', 'app/*.css'], ['copy', 'webpack'])
+// gulp.watch(['app/**/*.js', 'app/*.html', 'app/*.css'], ['copy', 'webpack']);
 

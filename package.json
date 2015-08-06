@@ -4,8 +4,8 @@
   "description": "REST API with a single resource",
   "main": "server.js",
   "scripts": {
-    "test": "gulp",
-    "start": "node server.js"
+    "test": "mocha",
+    "start": "gulp"
   },
   "repository": {
     "type": "git",

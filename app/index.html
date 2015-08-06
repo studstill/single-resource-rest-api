@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<!-- We're setting up a 2-way data binding -->
+<body data-ng-app="usersApp">
+<!--   The "main" tag is html5, it defines the main content of the page, and there can only be one "main" tag -->
+  <main class="main" data-ng-controller="userController" data-ng-init="getAll()">
+  <h1>Virtual Roledex</h1>
+  <h3>This app saves new users and their email address</h3>
+  <!--The input text from below will be saved in a variable called "greeting" -->
+    <form name="newUserForm" data-ng-submit="create(user)">
+      <label for="newUserForm">New Username: {{ users.username }}</label>
+      <input type="text" data-ng-model="user.username" required/>
+      <label for="newUserForm">User's Email: {{ users.email }}</label>
+      <input type="email" data-ng-model="user.email" required/>
+      <button type="submit" data-ng-disabled="newUserForm.$invalid">Create New User</button>
+    </form>
+    <ul id="usersList">
+<!-- Below, for every element in our users array, we are going to have a user object
+    that is accessible to be run between the <ul> -->
+      <li data-ng-repeat="user in users" class="user">
+        Username: {{user.username}} <br>
+        Email: {{user.email}}
+        <form data-ng-if="user.editing" name="{{user._id}}form" data-ng-submit="update(user)">
+          <input type="text" data-ng-model="user.email">
+          <button type="submit">Save</button>
+          <button data-ng-click="cancel(user)">Cancel</button>
+        </form>
+
+<!-- If we are not curretnly editting this user, we are going to display a button to edit -->
+        <button data-ng-if="!user.editing" data-ng-click="edit(user)">Edit</button>
+        <button data-ng-click="destroy(user)">Delete</button>
+      </li>
+    </ul>
+  </main>
+
+  <script src="bundle.js"></script>
+</body>
+</html>

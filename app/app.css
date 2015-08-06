@@ -1,0 +1,32 @@
+h1,h2,h3 {
+  font-family: helvetica;
+  color: green;
+}
+
+main {
+  position: relative;
+  padding: 1em;
+  margin: 0 auto;
+}
+
+#usersList {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.user {
+  display: block;
+  list-style: none;
+  position: relative;
+  border: solid;
+  height: auto;
+  padding: 1em;
+  margin: .5em auto 0;
+  background-color: white;
+}
+
+input {
+  display: block;
+  margin: 5px;
+}
+

@@ -8,13 +8,13 @@
 
 - Startup a local database in a new terminal window by typing `mongod`
 
-- Run `gulp`
+- Run `npm start`
 
 - Navigate your browser to `localhost://3000`
 
-##How to test:
+##How to test client-side code with karma:
 
-- Run `mocha`
+- Run `gulp karmatest`
 
 
 

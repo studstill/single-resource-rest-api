@@ -1,14 +1,20 @@
-#How to test:
+#How to use:
 
 - Clone this repo into a local directory on your computer
 
 - Navigate to the cloned repo in your terminal
 
-- Run ```npm install```
+- Run `npm install`
 
-- Shutdown any running Mondo server that may already be running (the gulp command will start up your database for you)
+- Startup a local database in a new terminal window by typing `mongod`
 
-- Run ```gulp```
+- Run `npm start`
+
+- Navigate your browser to `localhost://3000`
+
+##How to test client-side code with karma:
+
+- Run `gulp karmatest`
 
 
 

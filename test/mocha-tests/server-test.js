@@ -1,30 +1,24 @@
-process.env.MONGOLAB_URI = 'mongodb://localhost/users_test';
-
 var mongoose = require('mongoose');
 var chai = require('chai');
 var chaiHTTP = require('chai-http');
 var expect = require('chai').expect;
-var startServer = require('../server.js');
-var User = require('../user-model');
+var server = require('../../server.js');
+var User = require('../../models/user-model');
 
+process.env.MONGOLAB_URI = 'mongodb://localhost/users-test';
 chai.use(chaiHTTP);
-
 
 // Create variables for testing
 var correctSchemaObj = {'username': 'jason123',
-                        'email': 'jason123@email.com',
-                        'age': 31};
+                        'email': 'jason123@email.com'};
+var userId = '';
 
 var incorrectSchemaObj = {'email': 'crazy_person123ATaol.com',
                           'favoriteActor': 'Tom Cruise'};
 
-var propToUpdate = {age: 5000};
+var propToUpdate = {email: 'newemail@newemail.com'};
 
 describe('server', function() {
-
-  before(function() {
-    startServer();
-  });
 
   after(function(done) {
     mongoose.connection.db.dropDatabase();
@@ -49,7 +43,7 @@ describe('server', function() {
   it('Should respond to GET request to "/users"',
     function(done) {
       chai.request('http://localhost:3000')
-        .get('/users')
+        .get('/api/users')
         .then(function(res) {
           expect(res).to.have.status(200);
           expect(typeof(res.body)).to.eql('object');
@@ -61,20 +55,20 @@ describe('server', function() {
   /   Handle POST requests
   /************************************************************/
 
-  it('Should respond to POST request to "/users"', function(done) {
+  it('Should respond to POST request to "/api/users"', function(done) {
     chai.request('http://localhost:3000')
-      .post('/users')
-      .send(correctSchemaObj)
-      .then(function(res) {
-        expect(res.body.username).to.eql(correctSchemaObj.username);
-        expect(res.body.email).to.eql(correctSchemaObj.email);
-        expect(res.body.age).to.eql(correctSchemaObj.age);
-      });
-    chai.request('http://localhost:3000')
-      .post('/users')
+      .post('/api/users')
       .send(incorrectSchemaObj)
       .then(function(res) {
         expect(res.body.err).to.not.eql(null);
+      });
+    chai.request('http://localhost:3000')
+      .post('/api/users')
+      .send(correctSchemaObj)
+      .then(function(res) {
+        userId = res.body._id;
+        expect(res.body.username).to.eql(correctSchemaObj.username);
+        expect(res.body.email).to.eql(correctSchemaObj.email);
         done();
       });
   });
@@ -83,10 +77,10 @@ describe('server', function() {
   /   Handle PUT requests
   /************************************************************/
 
-  it('Should respond to PUT request to "/users/id:"', function(done) {
+  it('Should respond to PUT request to "/api/users/id:"', function(done) {
 
     chai.request('http://localhost:3000')
-      .put('/users/jason123')
+      .put('/api/users/' + userId)
       .send(propToUpdate)
       .end(function(err, res) {
         expect(err).to.eql(null);
@@ -95,8 +89,8 @@ describe('server', function() {
       });
     // Input improperly formated email and expect err
     chai.request('http://localhost:3000')
-      .put('/users/jason123')
-      .send({email: 'jason123ATemail.corn'})
+      .put('/api/users/' + userId)
+      .send({email: 'email.com'})
       .end(function(err, res) {
         expect(res.body.err).to.not.eql(null);
         done();
@@ -107,15 +101,15 @@ describe('server', function() {
   /   Handle DELETE requests
   /************************************************************/
 
-  it('Should respond to DELETE request to "/users/id:"', function(done) {
+  it('Should respond to DELETE request to "/api/users/id:"', function(done) {
     chai.request('http://localhost:3000')
-      .del('/users/jason123')
+      .del('/api/users/' + userId)
       .end(function(err, res) {
       });
 
     // Do GET request for deleted user to make sure it is gone
     chai.request('http://localhost:3000')
-      .get('/users/jason123')
+      .get('/api/users/' + userId)
       .then(function(res) {
         // There SHOULD be an error
         expect(res.error).to.not.eql(null);

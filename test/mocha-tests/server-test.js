@@ -1,10 +1,9 @@
-
 var mongoose = require('mongoose');
 var chai = require('chai');
 var chaiHTTP = require('chai-http');
 var expect = require('chai').expect;
-var server = require('../server.js');
-var User = require('../models/user-model');
+var server = require('../../server.js');
+var User = require('../../models/user-model');
 
 process.env.MONGOLAB_URI = 'mongodb://localhost/users-test';
 chai.use(chaiHTTP);
@@ -59,17 +58,17 @@ describe('server', function() {
   it('Should respond to POST request to "/api/users"', function(done) {
     chai.request('http://localhost:3000')
       .post('/api/users')
+      .send(incorrectSchemaObj)
+      .then(function(res) {
+        expect(res.body.err).to.not.eql(null);
+      });
+    chai.request('http://localhost:3000')
+      .post('/api/users')
       .send(correctSchemaObj)
       .then(function(res) {
         userId = res.body._id;
         expect(res.body.username).to.eql(correctSchemaObj.username);
         expect(res.body.email).to.eql(correctSchemaObj.email);
-      });
-    chai.request('http://localhost:3000')
-      .post('/api/users')
-      .send(incorrectSchemaObj)
-      .then(function(res) {
-        expect(res.body.err).to.not.eql(null);
         done();
       });
   });

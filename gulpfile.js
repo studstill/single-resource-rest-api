@@ -53,5 +53,5 @@ gulp.task('copy', function() {
 gulp.task('build', ['webpack:dev', 'copy']);
 gulp.task('default', ['build', 'mochatest', 'karmatest'], function() {});
 
-// gulp.watch(['app/**/*.js', 'app/*.html', 'app/*.css'], ['copy', 'webpack']);
+gulp.watch(['app/**/*.js', 'app/**/*.html', 'app/*html', 'app/*.css'], ['copy', 'build']);
 

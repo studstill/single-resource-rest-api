@@ -1,12 +1,24 @@
 h1,h2,h3 {
   font-family: helvetica;
   color: green;
+  margin-top: 0;
+}
+
+article {
+  float: left;
+  display: inline-block;
+  padding: 1em;
+  margin: 0 5%;
+  display: inline-block;
+  width: 300px;
 }
 
 main {
   position: relative;
   padding: 1em;
-  margin: 0 auto;
+  margin: 0 0 0 5%;
+  display: inline-block;
+  width: 300px;
 }
 
 #usersList {
@@ -28,5 +40,17 @@ main {
 input {
   display: block;
   margin: 5px;
+}
+
+@media (min-width: 795px) {
+  article {
+    float: right;
+  }
+}
+
+@media (max-width: 795px) {
+  main {
+    width: 400px
+  }
 }
 

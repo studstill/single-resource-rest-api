@@ -1,0 +1,10 @@
+<div class="weather" data-ng-model="city">
+  <h3>Tomorrow's Weather Forcast for {{queriedCity}}</h3>
+  <h4>High of {{highTemp}} - Low of {{lowTemp}} <br />
+  With {{weather}}</h4>
+  <form name="newWeather" data-ng-submit="getTemp(city)">
+    <input type="text" data-ng-model="city" />
+    <button type="submit">Get Weather</button>
+  </form>
+</div>
+

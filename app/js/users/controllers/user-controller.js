@@ -2,12 +2,13 @@
 
 // We just use the generic app to make it more portable/usable
 module.exports = function(app) {
-  app.controller('userController', ['$scope', '$http', function($scope, $http) {
+  app.controller('userController', ['$scope', 'RESTResource', function($scope, resource) {
     // As a part of the initialization we set $scope.users to an empty array so
     // we can use array methods on it later if the http.get method comes back
     // with an array.
     $scope.users = [];
     $scope.errors = [];
+    var User = new resource('users');
 
     // We wrap it so we can control when we call it, and more specifially, we
     // put it in a function so we can put it in an ng-init tag on the
@@ -15,17 +16,11 @@ module.exports = function(app) {
     // from the database.
     $scope.getAll = function() {
       // The $http library uses promises which are based on the q library
-      $http.get('/api/users')
-        // See what comes back in the response object here:
-        // http://docs.angularjs.org/api/ng/service/$http
-        .then(function(res) {
-          //success
-          $scope.users = res.data;
-        }, function(res) {
-          //error
-          $scope.errors.push({msg: 'Could not retrive users from server'});
-          console.log(res.data);
-        });
+      User.getAll(function(err, data) {
+        // "Cleaner" way of doing an if/else block by doing an early return
+        if (err) return $scope.errors.push({msg: 'error getting users'});
+        $scope.users = data;
+      });
     };
 
     $scope.edit = function(user) {
@@ -48,40 +43,29 @@ module.exports = function(app) {
       // We set $scope.user to null here to reset the input field to empty
       // after a new user is submitted
       $scope.user = null;
-      // look up the post method in the angular $http docs
-      $http.post('/api/users', user)
-        .then(function(res) {
-          $scope.users.push(res.data);
-          // null is an object, it will set whatever was passed into this
-          // function equal to null, so it will have a side-effect outside of
-          // this scope
-          user = null;
-        }, function(res) {
-          console.log(res.data);
-          $scope.errors.push(res.data);
-        });
+      // We set $scope.user to null here to reset the input field to empty
+      // after a new note is submitted
+      User.save(user, function(err, data) {
+        if (err) return $scope.errors.push({msg: 'could note save note: ' + note.noteBody});
+        $scope.users.push(data);
+        user = null;
+      });
     };
 
     $scope.destroy = function(user) {
-      $http.delete('/api/users/' + user._id)
-        .then(function(res) {
-          $scope.users.splice($scope.users.indexOf(user), 1);
-        }, function(res) {
-          console.log(res.data);
-          $scope.errors.push(res.data);
-        });
+      User.destroy(user, function(err, data) {
+        if (err) return $scope.errors.push({msg: 'could not delete user: ' + user.username});
+        $scope.users.splice($scope.users.indexOf(user), 1);
+      });
     };
 
     $scope.update = function(user) {
-      $http.put('/api/users/' + user._id, user)
-        .then(function(res) {
-          // We expliot mongoose/mongo by adding a field to the model that
-          // won't actually be saved, so we can use it TEMPORARILY client-side
-          user.editing = false;
-        }, function(res) {
-          user.editing = false;
-        });
+      User.update(user, function(err, data) {
+        if (err) return $scope.errors.push({msg: 'could not update user: ' + user.username});
+        // We expliot mongoose/mongo by adding a field to the model that
+        // won't actually be saved, so we can use it TEMPORARILY client-side
+        user.editing = false;
+      });
     };
-
   }]);
 };

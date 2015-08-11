@@ -53,7 +53,7 @@
 
 	'use strict';
 	__webpack_require__(2);
-	__webpack_require__(6);
+	__webpack_require__(10);
 
 	describe('Users controller', function() {
 	  var $ControllerConstructor;
@@ -141,11 +141,12 @@
 	'use strict';
 
 	__webpack_require__(3);
+	__webpack_require__(4);
+	__webpack_require__(6);
 
-	var usersApp = angular.module('usersApp', []);
+	var usersApp = angular.module('usersApp', ['services', 'directives']);
 
-	__webpack_require__(4)(usersApp);
-
+	__webpack_require__(8)(usersApp);
 
 
 /***/ },
@@ -28523,14 +28524,9 @@
 
 	'use strict';
 
-	// This is where I'm doing all the dependecy management for notes, so I can
-	// just include a single file in my main application and require it into
-	// this function
-	module.exports = exports = function(app) {
-	  // We use the underscore to make to account for operating systems that don't
-	  // handle case (camel case, upper case, lower case, etc.)
-	  __webpack_require__(5)(app);
-	};
+	var services = module.exports = exports = angular.module('services', []);
+
+	__webpack_require__(5)(services);
 
 
 /***/ },
@@ -28539,14 +28535,143 @@
 
 	'use strict';
 
+	module.exports = function(app) {
+	  // We're not using the .service method because it's "crazy".
+	  // .factory works the way that you expect it to, .service does not
+	  // Check the docs.angularjs.org/guide/services
+	  app.factory('RESTResource', ['$http', function($http) {
+	    var handleError = function(callback) {
+	      return function(res) {
+	        // If we get an error from our $http connection:
+	        console.log(res.data);
+	        callback(res.data);
+	      };
+	    };
+
+	    var handleSuccess = function(callback) {
+	      return function(res) {
+	        // First argument is null because err will be null in a success
+	        callback(null, res.data);
+	      };
+	    };
+
+	    return function(resourceName) {
+	      var handleRequest = function(method, data, callback) {
+	        var url = '/api/' + resourceName;
+	        if (data && data._id) url += '/' + data._id;
+	        $http({
+	          method: method,
+	          url: url,
+	          data: data
+	        })
+	          .then(handleSuccess(callback), handleError(callback));
+	      };
+
+	      return {
+	        getAll: function(callback) {
+	          handleRequest('GET', null, callback);
+	        },
+
+	        save: function(data, callback) {
+	          handleRequest('POST', data, callback);
+	        },
+
+	        update: function(data, callback) {
+	          handleRequest('PUT', data, callback);
+	        },
+
+	        destroy: function(data, callback) {
+	          handleRequest('DELETE', data, callback);
+	        }
+	      }
+	    };
+	  }]);
+	};
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var directives = angular.module('directives', []);
+	__webpack_require__(7)(directives);
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function(app) {
+	// Followed example code found here:
+	// http://www.ng-newsletter.com/posts/directives.html
+	  app.directive('weather', function() {
+	    return {
+	      restrict: 'A',
+	      templateUrl: './templates/weather.html',
+	      scope: {
+	        city: '=',
+	      },
+	      controller: ['$scope', '$http', function($scope, $http) {
+	        $scope.queriedCity = $scope.queriedCity || 'Seattle';
+	        $scope.city = $scope.city || 'Seattle';
+	        var url = "http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=imperial&cnt=7&callback=JSON_CALLBACK&q="
+
+	        $scope.getTemp = function(city) {
+	          $scope.queriedCity = $scope.city;
+	          $http({
+	            method: 'JSONP',
+	            url: url + $scope.city
+	          }).then(function(data) {
+	            $scope.highTemp = data.data.list[0].temp.max;
+	            $scope.lowTemp = data.data.list[0].temp.min;
+	            $scope.weather = data.data.list[0].weather[0].description;
+	          });
+	          $scope.city = null;
+	        };
+	      }],
+	      link: function(scope, iElement, iAttrs, ctrl) {
+	        scope.getTemp(iAttrs.city);
+	      }
+	    };
+	  });
+	};
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	// This is where I'm doing all the dependecy management for notes, so I can
+	// just include a single file in my main application and require it into
+	// this function
+	module.exports = exports = function(app) {
+	  // We use the underscore to make to account for operating systems that don't
+	  // handle case (camel case, upper case, lower case, etc.)
+	  __webpack_require__(9)(app);
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+
 	// We just use the generic app to make it more portable/usable
 	module.exports = function(app) {
-	  app.controller('userController', ['$scope', '$http', function($scope, $http) {
+	  app.controller('userController', ['$scope', 'RESTResource', function($scope, resource) {
 	    // As a part of the initialization we set $scope.users to an empty array so
 	    // we can use array methods on it later if the http.get method comes back
 	    // with an array.
 	    $scope.users = [];
 	    $scope.errors = [];
+	    var User = new resource('users');
 
 	    // We wrap it so we can control when we call it, and more specifially, we
 	    // put it in a function so we can put it in an ng-init tag on the
@@ -28554,17 +28679,11 @@
 	    // from the database.
 	    $scope.getAll = function() {
 	      // The $http library uses promises which are based on the q library
-	      $http.get('/api/users')
-	        // See what comes back in the response object here:
-	        // http://docs.angularjs.org/api/ng/service/$http
-	        .then(function(res) {
-	          //success
-	          $scope.users = res.data;
-	        }, function(res) {
-	          //error
-	          $scope.errors.push({msg: 'Could not retrive users from server'});
-	          console.log(res.data);
-	        });
+	      User.getAll(function(err, data) {
+	        // "Cleaner" way of doing an if/else block by doing an early return
+	        if (err) return $scope.errors.push({msg: 'error getting users'});
+	        $scope.users = data;
+	      });
 	    };
 
 	    $scope.edit = function(user) {
@@ -28587,47 +28706,36 @@
 	      // We set $scope.user to null here to reset the input field to empty
 	      // after a new user is submitted
 	      $scope.user = null;
-	      // look up the post method in the angular $http docs
-	      $http.post('/api/users', user)
-	        .then(function(res) {
-	          $scope.users.push(res.data);
-	          // null is an object, it will set whatever was passed into this
-	          // function equal to null, so it will have a side-effect outside of
-	          // this scope
-	          user = null;
-	        }, function(res) {
-	          console.log(res.data);
-	          $scope.errors.push(res.data);
-	        });
+	      // We set $scope.user to null here to reset the input field to empty
+	      // after a new note is submitted
+	      User.save(user, function(err, data) {
+	        if (err) return $scope.errors.push({msg: 'could note save note: ' + note.noteBody});
+	        $scope.users.push(data);
+	        user = null;
+	      });
 	    };
 
 	    $scope.destroy = function(user) {
-	      $http.delete('/api/users/' + user._id)
-	        .then(function(res) {
-	          $scope.users.splice($scope.users.indexOf(user), 1);
-	        }, function(res) {
-	          console.log(res.data);
-	          $scope.errors.push(res.data);
-	        });
+	      User.destroy(user, function(err, data) {
+	        if (err) return $scope.errors.push({msg: 'could not delete user: ' + user.username});
+	        $scope.users.splice($scope.users.indexOf(user), 1);
+	      });
 	    };
 
 	    $scope.update = function(user) {
-	      $http.put('/api/users/' + user._id, user)
-	        .then(function(res) {
-	          // We expliot mongoose/mongo by adding a field to the model that
-	          // won't actually be saved, so we can use it TEMPORARILY client-side
-	          user.editing = false;
-	        }, function(res) {
-	          user.editing = false;
-	        });
+	      User.update(user, function(err, data) {
+	        if (err) return $scope.errors.push({msg: 'could not update user: ' + user.username});
+	        // We expliot mongoose/mongo by adding a field to the model that
+	        // won't actually be saved, so we can use it TEMPORARILY client-side
+	        user.editing = false;
+	      });
 	    };
-
 	  }]);
 	};
 
 
 /***/ },
-/* 6 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/**
